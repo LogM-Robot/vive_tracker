@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Point, Pose, Quaternion, Twist, Vector3, PoseWithCovarianceStamped
 import rospy
@@ -18,7 +18,7 @@ def vive_tracker():
     broadcaster = { }
     publisher = { }
     listener = tf.TransformListener()
-    rate = rospy.Rate(30) # 10hz]
+    rate = rospy.Rate(90) # 10hz]
     deviceCount = 0
 
     try:
@@ -32,7 +32,7 @@ def vive_tracker():
       else:
         template = "An exception of type {0} occurred. Arguments:\n{1!r}"
         message = template.format(type(ex).__name__, ex.args)
-        print message
+        print (message)
       #print(ex.args)
       quit()
 
@@ -81,7 +81,9 @@ def vive_tracker():
                             (qx,qy,qz,qw),
                             time,
                             publish_name_str,
-                            "vive_world")
+                            "vive_world",
+                            # "map"
+                          )
 
             # Publish a topic as euler angles
             [x,y,z,roll,pitch,yaw] = v.devices[deviceName].get_pose_euler()
