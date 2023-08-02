@@ -73,18 +73,35 @@ def vive_tracker():
             if deviceName not in broadcaster:
                 broadcaster[deviceName] = tf.TransformBroadcaster()
 
-            # Rotate Vive Trackers 180, so Z+ comes out of the top of the Tracker
+            
+            # # Rotate Vive Trackers 180, so Z+ comes out of the top of the Tracker
+            # if "LHR" in v.devices[deviceName].get_serial():
+            #     [qx, qy, qz, qw] = tf.transformations.quaternion_multiply([qx, qy, qz, qw], tf.transformations.quaternion_from_euler(math.pi, 0.0, -math.pi/2.0))
             if "LHR" in v.devices[deviceName].get_serial():
-                [qx, qy, qz, qw] = tf.transformations.quaternion_multiply([qx, qy, qz, qw], tf.transformations.quaternion_from_euler(math.pi, 0.0, -math.pi/2.0))
+                [qx, qy, qz, qw] = tf.transformations.quaternion_multiply([qx, qy, qz, qw], tf.transformations.quaternion_from_euler(-math.pi/2.0, 0.0, 0.0))
 
             broadcaster[deviceName].sendTransform((x,y,z),
                             (qx,qy,qz,qw),
                             time,
                             publish_name_str,
                             "vive_world",
-                            # "map"
+                            # "map",
                           )
 
+            rot_offset = [-0.678416, 0.033092, 0.704248, 0.206620] # left
+            # rot_offset = [0.033092, -0.678416, -0.206620, -0.704248] # right
+            if "LHR" in v.devices[deviceName].get_serial():
+                [qx_g, qy_g, qz_g, qw_g] = tf.transformations.quaternion_multiply([qx, qy, qz, qw], rot_offset)
+
+            broadcaster[deviceName].sendTransform((x,y,z),
+                            (qx_g,qy_g,qz_g,qw_g),
+                            time,
+                            publish_name_str+"glove_wrist",
+                            "vive_world",
+                            # "map",
+                          )
+
+            
             # Publish a topic as euler angles
             [x,y,z,roll,pitch,yaw] = v.devices[deviceName].get_pose_euler()
             y_rot = math.radians(pitch)
@@ -100,7 +117,7 @@ def vive_tracker():
                     publisher["ring_odom"] = rospy.Publisher("ring_odom", Odometry, queue_size=50)
                     publisher[deviceName + "_odom"] = rospy.Publisher(publish_name_str + "_odom", Odometry, queue_size=50)
                     publisher[deviceName + "_inverted_odom"] = rospy.Publisher(publish_name_str + "_inverted_odom", Odometry, queue_size=50)
-                    publisher[deviceName + "_pose"] = rospy.Publisher(publish_name_str + "_pose",PoseWithCovarianceStamped,queue_size=10)
+                    publisher[deviceName + "_pose"] = rospy.Publisher(publish_name_str + "_pose", PoseWithCovarianceStamped, queue_size=1)
                 # next, we'll publish the odometry message over ROS
                 odom = Odometry()
                 odom.header.stamp = time
