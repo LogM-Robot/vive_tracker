@@ -88,8 +88,8 @@ def vive_tracker():
                             # "map",
                           )
 
-            rot_offset = [-0.678416, 0.033092, 0.704248, 0.206620] # left
-            # rot_offset = [0.033092, -0.678416, -0.206620, -0.704248] # right
+            # rot_offset = [-0.678416, 0.033092, 0.704248, 0.206620] # left
+            rot_offset = [0.033092, -0.678416, -0.206620, -0.704248] # right
             if "LHR" in v.devices[deviceName].get_serial():
                 [qx_g, qy_g, qz_g, qw_g] = tf.transformations.quaternion_multiply([qx, qy, qz, qw], rot_offset)
 
