@@ -147,6 +147,7 @@ def vive_tracker():
 
                 # Create a pose with covariance stamped topic
                 pose = PoseWithCovarianceStamped()
+                pose.header.stamp = time
                 pose.pose.pose = Pose(Point(x, y, z), Quaternion(qx,qy,qz,qw))
                 pose.pose.covariance = tuple(p_cov.ravel().tolist())
                 if not (x == 0.0 and y == 0.0 and z == 0.0 and vx == 0.0 and vy == 0.0 and vz == 0.0 and v_roll == 0.0 and v_pitch == 0.0 and v_yaw == 0.0):
